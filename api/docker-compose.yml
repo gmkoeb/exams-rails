@@ -1,0 +1,36 @@
+services:
+  api:
+    build: .
+    volumes:
+      - .:/app
+    command: "rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  db: 
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=super_secret
+    ports: 
+      - "5432:5432"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  sidekiq:
+    build:
+      context: .
+    command: sidekiq
+    links:
+      - redis
+    depends_on:
+      - api
+      - redis
+    volumes:
+      - .:/app
+    environment:
+      REDIS_URL: redis://redis:6379/0
