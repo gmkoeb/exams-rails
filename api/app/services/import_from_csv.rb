@@ -1,13 +1,15 @@
 class ImportFromCsv
   require 'csv'
-  def import(rows)
+  def import(rows, job)
     rows.shift
-
+    count = 0
     rows.each do |row|
       patient = find_or_create_patient(row)
       doctor = find_or_create_doctor(row)
       Exam.create(doctor:, patient:, token: row[11], date: row[12], exam_type: row[13], type_limits: row[14],
                   type_result: row[15])
+      count += 1
+      job.update(processed_rows: count)
     end
   end
 

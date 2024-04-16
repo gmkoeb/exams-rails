@@ -2,9 +2,11 @@ FROM ruby:3.2.2
 
 WORKDIR /app
 
-COPY . /app/
+COPY Gemfile Gemfile.lock ./
 
 RUN bundle install
+
+COPY . ./app/
 
 EXPOSE 3000
 

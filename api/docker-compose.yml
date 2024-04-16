@@ -3,10 +3,7 @@ services:
     build: .
     volumes:
       - .:/app
-      - ruby_gems:/bundle
     command: "rails s -p 3000 -b '0.0.0.0'"
-    environment:
-      - RUBY_GEMS=/bundle/vendor
     ports:
       - "3000:3000"
     depends_on:
@@ -38,5 +35,3 @@ services:
       - .:/app
     environment:
       REDIS_URL: redis://redis:6379/0
-volumes:
-  ruby_gems:

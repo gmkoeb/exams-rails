@@ -6,6 +6,7 @@ class CsvImportJob < ApplicationJob
   end
   
   def perform(rows, token)
-    ImportFromCsv.new.import(rows)
+    job = JobStatus.find_by(token: )
+    ImportFromCsv.new.import(rows, job)
   end
 end

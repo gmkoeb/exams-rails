@@ -9,3 +9,7 @@
 .active{
   color: white;
 }
+
+.smooth-transition {
+  transition: width 0.3s ease-in-out; /* Adjust the duration and easing as needed */
+}

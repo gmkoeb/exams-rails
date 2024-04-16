@@ -22,7 +22,7 @@ describe 'Exams API' do
   end
 
   context 'post api/v1/exams/import' do
-    it 'runs the job to import data from csv file and generates a job token' do
+    it 'runs the job to import data from csv' do
       csv_file = Rails.root.join('spec/support/assets/test.csv')
       csv_content = CSV.read(csv_file, col_sep: ';') 
       csv_import_spy = spy('CsvImportJob')
@@ -38,6 +38,7 @@ describe 'Exams API' do
       json_response = JSON.parse(response.body)
       expect(json_response["message"]).to include('CSV processing started')
       expect(json_response["token"]).to include(token)
+      expect(json_response["rows_to_process"]).to eq csv_content.count
     end
 
     it 'doesnt process invalid files' do

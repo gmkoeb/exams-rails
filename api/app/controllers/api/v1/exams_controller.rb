@@ -12,8 +12,8 @@ module Api
       end
 
       def import_status
-        status = JobStatus.find_by(token: params[:token]).status
-        render status: 200, json: { status: }
+        job = JobStatus.find_by(token: params[:token])
+        render status: 200, json: { status: job.status, processed_rows: job.processed_rows}
       end
 
       private
@@ -23,12 +23,11 @@ module Api
             rows = CSV.read(file, col_sep: ';')
             status = JobStatus.create
             CsvImportJob.perform_later(rows, status.token)
-            render status: 200, json: { message: 'CSV processing started', token: status.token }
+            render status: 200, json: { message: 'CSV processing started', token: status.token, rows_to_process: rows.count }
         else
           render status: 400, json: { message: 'Invalid file' }
         end
       end
-
     end
   end
 end
