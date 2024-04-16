@@ -1,5 +1,5 @@
 require 'rails_helper'
-
+require 'csv'
 describe 'Exams API' do
   context 'get api/v1/exams' do
     it 'returns exams list with code 200' do
@@ -23,13 +23,30 @@ describe 'Exams API' do
 
   context 'post api/v1/exams/import' do
     it 'runs the job to import data from csv file' do
-      csv = Rails.root.join('spec/support/assets/test.csv')
+      csv_file = Rails.root.join('spec/support/assets/test.csv')
+      csv_content = CSV.read(csv_file, col_sep: ';') 
       csv_import_spy = spy('CsvImportJob')
       stub_const('CsvImportJob', csv_import_spy)
 
-      post api_v1_exams_import_path, params: { upload: csv }
+      post api_v1_exams_import_path, params: { file: csv_file }
 
-      expect(csv_import_spy).to have_received(:perform_later).with(csv.to_s)
+      expect(csv_import_spy).to have_received(:perform_later).with(csv_content)
+      expect(response.status).to eq 200
+      json_response = JSON.parse(response.body)
+      expect(json_response["message"]).to include('CSV processing started')
+    end
+
+    it 'doesnt process invalid files' do
+      invalid_file = Rails.root.join('spec/support/assets/dummy.pdf')
+      csv_import_spy = spy('CsvImportJob')
+      stub_const('CsvImportJob', csv_import_spy)
+
+      post api_v1_exams_import_path, params: { file: invalid_file }
+      
+      expect(response.status).to eq 400
+      json_response = JSON.parse(response.body)
+      expect(csv_import_spy).to_not have_received(:perform_later)
+      expect(json_response["message"]).to include('Invalid file')
     end
   end
 end

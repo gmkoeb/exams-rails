@@ -1,8 +1,6 @@
 class ImportFromCsv
   require 'csv'
-  def import(csv)
-    rows = CSV.read(csv, col_sep: ';')
-
+  def import(rows)
     rows.shift
 
     rows.each do |row|

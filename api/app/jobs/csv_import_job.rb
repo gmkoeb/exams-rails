@@ -1,7 +1,7 @@
 class CsvImportJob < ApplicationJob
   include Sidekiq
 
-  def perform(csv)
-    ImportFromCsv.new.import(csv)
+  def perform(rows)
+    ImportFromCsv.new.import(rows)
   end
 end

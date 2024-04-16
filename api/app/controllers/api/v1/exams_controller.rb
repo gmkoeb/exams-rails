@@ -6,10 +6,22 @@ module Api
       end
 
       def import
-        csv = params[:upload]
-
-        CsvImportJob.perform_later(csv)
+        process_file(params[:file])
       end
+
+
+      private
+
+      def process_file(file)
+        if File.extname(file) == '.csv'
+            rows = CSV.read(file, col_sep: ';')
+            CsvImportJob.new.perform_later(rows)
+            render status: 200, json: { message: 'CSV processing started' }
+        else
+          render status: 400, json: { message: 'Invalid file' }
+        end
+      end
+
     end
   end
 end
