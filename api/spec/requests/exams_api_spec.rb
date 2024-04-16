@@ -22,18 +22,22 @@ describe 'Exams API' do
   end
 
   context 'post api/v1/exams/import' do
-    it 'runs the job to import data from csv file' do
+    it 'runs the job to import data from csv file and generates a job token' do
       csv_file = Rails.root.join('spec/support/assets/test.csv')
       csv_content = CSV.read(csv_file, col_sep: ';') 
       csv_import_spy = spy('CsvImportJob')
       stub_const('CsvImportJob', csv_import_spy)
+      allow(SecureRandom).to receive(:alphanumeric).with(8).and_return('ABC12345')    
+      token = 'ABC12345'
 
-      post api_v1_exams_import_path, params: { file: csv_file }
+      post import_api_v1_exams_path, params: { file: csv_file }
 
-      expect(csv_import_spy).to have_received(:perform_later).with(csv_content)
+      expect(JobStatus.last.token).to eq token
+      expect(csv_import_spy).to have_received(:perform_later).with(csv_content, token)
       expect(response.status).to eq 200
       json_response = JSON.parse(response.body)
       expect(json_response["message"]).to include('CSV processing started')
+      expect(json_response["token"]).to include(token)
     end
 
     it 'doesnt process invalid files' do
@@ -41,12 +45,37 @@ describe 'Exams API' do
       csv_import_spy = spy('CsvImportJob')
       stub_const('CsvImportJob', csv_import_spy)
 
-      post api_v1_exams_import_path, params: { file: invalid_file }
+      post import_api_v1_exams_path, params: { file: invalid_file }
       
       expect(response.status).to eq 400
       json_response = JSON.parse(response.body)
       expect(csv_import_spy).to_not have_received(:perform_later)
       expect(json_response["message"]).to include('Invalid file')
+    end
+
+    it 'doesnt process empty files' do
+      invalid_file = Rails.root.join('spec/support/assets/dummy.pdf')
+      csv_import_spy = spy('CsvImportJob')
+      stub_const('CsvImportJob', csv_import_spy)
+
+      post import_api_v1_exams_path, params: { file: '' }
+      
+      expect(response.status).to eq 400
+      json_response = JSON.parse(response.body)
+      expect(csv_import_spy).to_not have_received(:perform_later)
+      expect(json_response["message"]).to include('Invalid file')
+    end
+  end
+
+  context 'get api/v1/exams/import/status' do
+    it 'returns exams importation status' do
+      status = JobStatus.create
+
+      get import_status_api_v1_exams_path(status.token)
+      
+      expect(response.status).to eq 200
+      json_response = JSON.parse(response.body)
+      expect(json_response["status"]).to include('pending')
     end
   end
 end

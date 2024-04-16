@@ -4,13 +4,17 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :doctors, only: %w[index] do
-        get 'exams', controller: :doctors, action: :exams
+        resources :exams, only: [:index], controller: 'doctors/exams'
       end
-      resources :exams, only: %w[index]
+      resources :exams, only: %w[index] do
+        collection do
+          post 'import'
+          get 'import/:token/status', action: :import_status, as: 'import_status'
+        end
+      end
       resources :patients, only: %w[index] do
-        get 'exams', controller: :patients, action: :exams
+        resources :exams, only: [:index], controller: 'patients/exams'
       end
-      post 'exams/import', controller: :exams
     end
   end
 end
