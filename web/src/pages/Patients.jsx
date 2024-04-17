@@ -15,7 +15,7 @@ export default function Patients(){
   return(
     <div>
       <h1 className="text-center text-5xl mt-4">Patients List</h1>
-      <div className="flex flex-wrap w-1/2 mx-auto gap-5 mt-6">
+      <div className="flex flex-wrap mx-auto gap-5 mt-6">
         {
           patients.map(patient => <PatientCard 
                                     key={patient.id}

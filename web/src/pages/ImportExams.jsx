@@ -17,22 +17,21 @@ export default function ImportExams(){
       method: 'POST',
       body: formData
     })
-    const importData = await importResponse.text();
-    const parsedData = JSON.parse(importData)
-    const rowsToProcess = parsedData["rows_to_process"]
+    const importData = await importResponse.json();
+    const rowsToProcess = importData["rows_to_process"]
 
-    setImportStatus(parsedData["message"])
-    checkJobStatus(parsedData["token"], rowsToProcess)
+    setImportStatus(importData["message"])
+    checkJobStatus(importData["token"], rowsToProcess)
   }
 
   async function checkJobStatus(token, rowsToProcess){
     while (true) {
       await new Promise(r => setTimeout(r, 200))
       const statusResponse = await fetch(`http://localhost:3000/api/v1/exams/import/${token}/status`)
-      const statusData = await statusResponse.text()
-      const parsedResponse = JSON.parse(statusData)
-      handleProcessedRowsCalculation(parsedResponse["processed_rows"], rowsToProcess)
-      if(parsedResponse["status"] === 'done'){
+      const statusData = await statusResponse.json()
+
+      handleProcessedRowsCalculation(statusData["processed_rows"], rowsToProcess)
+      if(statusData["status"] === 'done'){
         setJobStatus('done')
         setImportStatus('CSV importation finished with success!')
         break;
