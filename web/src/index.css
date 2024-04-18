@@ -11,5 +11,33 @@
 }
 
 .smooth-transition {
-  transition: width 0.3s ease-in-out; /* Adjust the duration and easing as needed */
+  transition: width 0.3s ease-in-out;
+}
+
+
+.exam-cards.collapsed {
+  height: 0;
+  opacity: 0;
+}
+
+.exam-cards{
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.exam-cards.show {
+  opacity: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.exam-cards {
+  animation: fadeInUp 0.3s ease-in-out;
 }

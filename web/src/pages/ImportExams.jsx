@@ -75,7 +75,7 @@ export default function ImportExams(){
       <form className="flex flex-col w-full gap-5 mx-auto mt-10" method="post" onChange={handleFormChange} onSubmit={handleImport}>
         <p className="text-center" htmlFor="csvImport">Export your exams to our database <span className="text-red-600 text-xs">*extensions supported .csv</span></p>
         <div className="flex justify-center items-center">
-          <label onDrop={handleFormChange} onDragOver={handleDragover} id="dropzone" className="w-1/2 h-64 flex border-dashed border-2 justify-center" htmlFor="csvImport">
+          <label onDrop={handleFormChange} onDragOver={handleDragover} id="dropzone" className="w-1/2 h-64 flex border-dashed border-2 border-gray-400 justify-center" htmlFor="csvImport">
             <div className="flex justify-center items-center">
               <p className="mx-2">{formFile}</p>
               <label htmlFor="csvImport" className="border bg-emerald-400 p-1 text-white rounded-md">browse</label>
@@ -85,9 +85,11 @@ export default function ImportExams(){
         </div>
         <button type="submit" className="bg-emerald-400 w-1/2 mx-auto rounded-sm p-1 px-6 text-white hover:opacity-90">Send</button>
         <div className="flex flex-col w-1/2 mx-auto">
-          <div className="w-full bg-gray-200 rounded-full h-5 dark:bg-gray-700">
-            <div className="bg-green-500 h-5 rounded-full smooth-transition" style={{width: processedPercentage + '%'}}></div>
-          </div>
+          {processedPercentage !== 0 &&
+            <div className="w-full rounded-full h-5 bg-gray-300 dark:bg-gray-700">
+              <div className="bg-green-500 h-5 rounded-full smooth-transition" style={{width: processedPercentage + '%'}}></div>
+            </div>
+          }
           <p className={`text-center ${colorBasedOnStatus()} my-5`}>{importStatus}</p>
         </div>
       </form>

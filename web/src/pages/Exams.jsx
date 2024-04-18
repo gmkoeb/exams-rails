@@ -40,7 +40,7 @@ export default function Exams(){
             <h3 onClick={Collapse} className="text-2xl font-bold text-blue-500 underline mt-2 text-center w-fit mx-auto hover: cursor-pointer">{exam[0]}</h3>
             <div className="flex flex-wrap justify-center gap-5">
               {exam[1].map(details => (
-                <div key={details.id}>
+                <div key={details.id} className={`exam-cards ${open && index === details.token ? '' : 'collapsed'}`}>
                   {open && index === details.token &&
                     <div className={`bg-white p-5 border rounded-lg`}>
                       <ExamCard 

@@ -34,7 +34,7 @@ export default function DoctorCard(props){
       </button>
       <div>
         {exams.map(exam => (
-          <div key={exam[0]}>
+          <div className="exam-cards" key={exam[0]}>
             <h3 className="text-center text-2xl font-bold text-green-500 mt-2">{exam[0]}</h3>
             {exam[1].map(examDetails => (
                 <ExamCard 
