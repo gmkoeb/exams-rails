@@ -10,7 +10,6 @@ export default function Patients(){
       setPatients(patientsList)
     }
     fetchData()
-    console.log(patients)
   }, [])
   return(
     <div>

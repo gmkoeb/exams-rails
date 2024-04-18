@@ -6,9 +6,11 @@ class ImportFromCsv
     rows.each do |row|
       patient = find_or_create_patient(row)
       doctor = find_or_create_doctor(row)
-      Exam.create(doctor:, patient:, token: row[11], date: row[12], exam_type: row[13], type_limits: row[14],
-                  type_result: row[15])
+      new_exam = Exam.create(doctor:, patient:, token: row[11], date: row[12], exam_type: row[13], type_limits: row[14],
+                         type_result: row[15])
       count += 1
+      job.update(processed_rows: rows.count) if rows.count == count
+      next unless count % 100 == 0
       job.update(processed_rows: count)
     end
   end

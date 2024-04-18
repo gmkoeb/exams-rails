@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ImportExams(){
   const [formFile, setFormFile] = useState('Drag and drop a CSV file here or')
   const [importStatus, setImportStatus] = useState('')
   const [jobStatus, setJobStatus] = useState('pending')
   const [processedPercentage, setProcessedPercentage] = useState(0)
+  const [processedRows, setProcessedRows] = useState(0)
+  const [rowsToProcess, setRowsToProcess] = useState(0)
+
+  useEffect(() => {
+    if (rowsToProcess !== 0) {
+      let processedProgress = Math.abs(processedRows/rowsToProcess) * 100
+      setProcessedPercentage(processedProgress)
+    }
+  }, [processedRows])
 
   async function handleImport(event){
     event.preventDefault()
@@ -18,19 +27,17 @@ export default function ImportExams(){
       body: formData
     })
     const importData = await importResponse.json();
-    const rowsToProcess = importData["rows_to_process"]
-
+    setRowsToProcess(importData["rows_to_process"])
     setImportStatus(importData["message"])
-    checkJobStatus(importData["token"], rowsToProcess)
+    checkJobStatus(importData["token"])
   }
 
-  async function checkJobStatus(token, rowsToProcess){
+  async function checkJobStatus(token){
     while (true) {
       await new Promise(r => setTimeout(r, 200))
       const statusResponse = await fetch(`http://localhost:3000/api/v1/exams/import/${token}/status`)
       const statusData = await statusResponse.json()
-
-      handleProcessedRowsCalculation(statusData["processed_rows"], rowsToProcess)
+      setProcessedRows(statusData["processed_rows"])
       if(statusData["status"] === 'done'){
         setJobStatus('done')
         setImportStatus('CSV importation finished with success!')
@@ -38,10 +45,7 @@ export default function ImportExams(){
       }
     }
   }
-  function handleProcessedRowsCalculation(processedRows, rowsToProcess){
-    let processedProgress = (Math.abs(processedRows))/(Math.abs(rowsToProcess)) * 100
-    setProcessedPercentage(processedProgress)
-  }
+
   function handleDragover(event){
     event.preventDefault()
   }
@@ -65,6 +69,7 @@ export default function ImportExams(){
       return 'text-yellow-500'
     }
   }
+  
   return (
     <div>
       <form className="flex flex-col w-full gap-5 mx-auto mt-10" method="post" onChange={handleFormChange} onSubmit={handleImport}>

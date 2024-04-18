@@ -21,11 +21,11 @@ export default function DoctorCard(props){
       <h3 className="my-1 text-2xl border-b w-full text-center font-semibold">{props.name}</h3>
       <div className="flex gap-10 mt-5">
         <div className="mb-5">
-          <h5 className="text-center text-lg text-green-500">Email</h5>
+          <h5 className="text-center text-lg text-blue-500">Email</h5>
           <p>{props.email}</p>
         </div>
         <div>
-          <h5 className="text-center text-lg text-green-500">CRM</h5>
+          <h5 className="text-center text-lg text-blue-500">CRM</h5>
           <p>{props.crm} - {props.crm_state}</p>
         </div>
       </div>
@@ -39,7 +39,6 @@ export default function DoctorCard(props){
             {exam[1].map(examDetails => (
                 <ExamCard 
                   key={examDetails.id}
-                  token={examDetails.token}
                   date={examDetails.date}
                   examType={examDetails.exam_type}
                   typeLimits={examDetails.type_limits}
